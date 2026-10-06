@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gradebook System Dashboard</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 40px; background-color: #f4f6f9; color: #333; }
+        h1 { color: #2c3e50; border-bottom: 2px solid #2c3e50; padding-bottom: 10px; }
+        h2 { color: #2980b9; margin-top: 30px; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #34495e; color: white; }
+        tr:hover { background-color: #f1f1f1; }
+        .fail-tag { color: #c0392b; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h1>Grading App Results & Analytics</h1>
+
+    <!-- 1. Top 3 Scorers Section -->
+    <div class="card">
+        <h2>1. Top 3 Scorers in Each Course</h2>
+        {% for item in course_top_scorers %}
+            <h3>{{ item.course.code }} - {{ item.course.name }}</h3>
+            <table>
+                <tr>
+                    <th>Rank</th>
+                    <th>Student Name</th>
+                    <th>Score</th>
+                </tr>
+                {% for record in item.top_scores %}
+                <tr>
+                    <td><strong>#{{ forloop.counter }}</strong></td>
+                    <td>{{ record.student.first_name }} {{ record.student.last_name }}</td>
+                    <td>{{ record.score }}%</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="3">No score records found for this course.</td></tr>
+                {% endfor %}
+            </table>
+        {% endfor %}
+    </div>
+
+    <!-- 2. Failing Students Section -->
+    <div class="card">
+        <h2>2. Students Below the Pass Mark (50)</h2>
+        <table>
+            <tr>
+                <th>Student Name</th>
+                <th>Course</th>
+                <th>Score</th>
+            </tr>
+            {% for record in failing_scores %}
+            <tr>
+                <td>{{ record.student.first_name }} {{ record.student.last_name }}</td>
+                <td>{{ record.course.code }} - {{ record.course.name }}</td>
+                <td class="fail-tag">{{ record.score }}%</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3">Great news! No students are currently below the passing score mark of 50.</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <!-- 3. Course Averages Section -->
+    <div class="card">
+        <h2>3. Average Score per Course (Highest to Lowest)</h2>
+        <table>
+            <tr>
+                <th>Course Code</th>
+                <th>Course Name</th>
+                <th>Class Average</th>
+            </tr>
+            {% for course in course_averages %}
+            <tr>
+                <td><strong>{{ course.code }}</strong></td>
+                <td>{{ course.name }}</td>
+                <td><strong>{{ course.avg_score|floatformat:2 }}%</strong></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3">No course data calculated.</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+</body>
+</html>
